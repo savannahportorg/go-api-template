@@ -1,0 +1,9 @@
+
+- identifier: "savannahportorg/go-api-template"
+  blueprint: service 
+  properties:
+    type: "Template"
+    lifecycle: "Experimental"
+  relations:
+    domain: "shipping"
+    project: "SAO"
