@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  demo-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: demo-api
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000
+      - GO_ENV=development
