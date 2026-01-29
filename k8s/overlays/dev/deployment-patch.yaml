@@ -11,6 +11,7 @@ spec:
     spec:
       containers:
       - name: demo-api
+        image: techsalad/csg-onboarding:beta
         env:
         - name: GO_ENV
           value: "development"

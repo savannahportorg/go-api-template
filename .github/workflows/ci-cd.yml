@@ -7,41 +7,17 @@ on:
         description: 'Name of the service/image'
         required: true
         type: string
-        default: 'go-api-template'
+        default: 'csg-onboarding'
   push:
-    branches: [ main ]
+    branches: [ dev ]
   pull_request:
-    branches: [ main ]
+    branches: [ dev ]
 
 jobs:
-  test:
-    name: Test
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Set up Go
-        uses: actions/setup-go@v4
-        with:
-          go-version: '1.21'
-
-      - name: Install dependencies
-        run: go mod download
-
-      - name: Run tests
-        run: go test -v ./...
-
-      - name: Run linter
-        uses: golangci/golangci-lint-action@v3
-        with:
-          version: latest
-
   build-and-push:
     name: Build and Push Docker image
-    needs: test
     runs-on: ubuntu-latest
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/dev'
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -55,24 +31,20 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Generate Swagger docs
-        run: |
-          go install github.com/swaggo/swag/cmd/swag@latest
-          swag init
-
       - name: Get service name
         id: service
         run: |
           if [ "${{ github.event_name }}" == "workflow_call" ]; then
             echo "name=${{ inputs.service_name }}" >> $GITHUB_OUTPUT
           else
-            echo "name=go-api-template" >> $GITHUB_OUTPUT
+            echo "name=csg-onboarding" >> $GITHUB_OUTPUT
           fi
 
       - name: Build and push
         uses: docker/build-push-action@v4
         with:
           context: .
+          platforms: linux/amd64,linux/arm64
           push: true
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/${{ steps.service.outputs.name }}:latest
