@@ -9,9 +9,9 @@ on:
         type: string
         default: 'csg-onboarding'
   push:
-    branches: [ dev ]
+    branches: [ reqheaders ]
   pull_request:
-    branches: [ dev ]
+    branches: [ reqheaders ]
 
 jobs:
   build-and-push:
@@ -47,7 +47,7 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: true
           tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/${{ steps.service.outputs.name }}:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/${{ steps.service.outputs.name }}:beta
             ${{ secrets.DOCKERHUB_USERNAME }}/${{ steps.service.outputs.name }}:${{ github.sha }}
           cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/${{ steps.service.outputs.name }}:buildcache
           cache-to: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/${{ steps.service.outputs.name }}:buildcache,mode=max
